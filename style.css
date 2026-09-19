@@ -1,64 +1,99 @@
-* {
+ {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: #0f1117;
   color: #f4f5f7;
   font-family: Arial, sans-serif;
   line-height: 1.6;
 }
 
-header,
-footer {
-  padding: 25px 6%;
+header {
+  padding: 35px 7%;
   background: #191d27;
+  border-bottom: 3px solid #c8ff61;
 }
 
 h1,
 h2 {
+  margin-top: 0;
   color: #c8ff61;
 }
 
+header p {
+  color: #aeb4c0;
+}
+
 a {
-  color: inherit;
+  color: #c8ff61;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 main {
+  flex: 1;
   width: 90%;
   max-width: 900px;
-  margin: 30px auto;
+  margin: 35px auto;
 }
 
 .panel {
-  padding: 25px;
+  padding: 30px;
   background: #191d27;
-  border-radius: 10px;
+  border: 1px solid #343b4b;
+  border-radius: 12px;
+}
+
+.panel p {
+  color: #aeb4c0;
 }
 
 .guide {
-  padding: 18px;
+  padding: 20px;
+  margin: 24px 0;
   background: #222735;
   border-left: 4px solid #c8ff61;
+  border-radius: 4px;
   overflow-wrap: anywhere;
 }
 
 .controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin: 20px 0;
+  gap: 12px;
+  margin: 24px 0;
 }
 
 button {
-  padding: 10px 16px;
+  padding: 12px 20px;
   background: #c8ff61;
-  color: #111;
-  border: none;
+  color: #101217;
+  border: 1px solid #c8ff61;
   border-radius: 6px;
   font: inherit;
+  font-weight: bold;
   cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: #dcff9a;
+}
+
+#stopRec {
+  background: transparent;
+  color: #c8ff61;
+}
+
+#stopRec:hover:not(:disabled) {
+  background: #293523;
 }
 
 button:disabled {
@@ -66,11 +101,35 @@ button:disabled {
   cursor: not-allowed;
 }
 
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #c8ff61;
+  outline-offset: 4px;
+}
+
 audio {
   width: 100%;
+  margin-top: 12px;
+  color-scheme: dark;
 }
 
 footer {
-  text-align: center;
+  padding: 25px;
+  background: #191d27;
   color: #aeb4c0;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .panel {
+    padding: 20px;
+  }
+
+  .controls {
+    flex-direction: column;
+  }
+
+  .controls button {
+    width: 100%;
+  }
 }
