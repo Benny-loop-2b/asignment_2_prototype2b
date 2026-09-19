@@ -1,109 +1,4 @@
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  background: #0f1117;
-  color: #f4f5f7;
-  font-family: Arial, sans-serif;
-  line-height: 1.6;
-}
-
-header,
-footer {
-  padding: 25px 6%;
-  background: #191d27;
-}
-
-header {
-  border-bottom: 3px solid #c8ff61;
-}
-
-h1,
-h2 {
-  margin-top: 0;
-  color: #c8ff61;
-}
-
-a {
-  color: inherit;
-}
-
-main {
-  width: 90%;
-  max-width: 900px;
-  margin: 30px auto;
-}
-
-.panel {
-  padding: 25px;
-  background: #191d27;
-  border-radius: 10px;
-}
-
-.guide {
-  padding: 18px;
-  background: #222735;
-  border-left: 4px solid #c8ff61;
-  overflow-wrap: anywhere;
-}
-
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin: 20px 0;
-}
-
-button {
-  padding: 10px 16px;
-  background: #c8ff61;
-  color: #111;
-  border: 1px solid #c8ff61;
-  border-radius: 6px;
-  font: inherit;
-  cursor: pointer;
-}
-
-#stopRec {
-  background: transparent;
-  color: #c8ff61;
-}
-
-button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-button:focus-visible {
-  outline: 3px solid white;
-  outline-offset: 3px;
-}
-
-audio {
-  width: 100%;
-  margin-top: 10px;
-}
-
-footer {
-  text-align: center;
-  color: #aeb4c0;
-}
-
-@media (max-width: 600px) {
-  .controls {
-    flex-direction: column;
-  }
-
-  button {
-    width: 100%;
-  }
-}
-
-script.js
-
-// The HTML uses defer, so these elements already exist.
+// HTML loads this script with defer.
 const guide = document.querySelector("#guide");
 const recordBtn = document.querySelector("#record");
 const stopBtn = document.querySelector("#stopRec");
@@ -113,16 +8,15 @@ const audio = document.querySelector("#audio");
 let recorder;
 let stream;
 let audioURL;
-let recordingTimer;
+let timer;
 let busy = false;
 let requestId = 0;
 
 guide.textContent = "Step 1 — Ready. Press Record.";
 recordBtn.disabled = false;
 
-// Release the microphone after recording.
 function releaseMicrophone() {
-  clearTimeout(recordingTimer);
+  clearTimeout(timer);
 
   if (stream) {
     stream.getTracks().forEach(track => track.stop());
@@ -141,8 +35,8 @@ function resetButtons() {
 function showError(error) {
   const messages = {
     NotAllowedError: "Microphone blocked. Allow access in your browser and try again.",
-    NotFoundError: "No microphone found. Connect a microphone and try again.",
-    NotReadableError: "Cannot access the microphone. Check your device settings."
+    NotFoundError: "No microphone found. Connect one and try again.",
+    NotReadableError: "Cannot open the microphone. Check your device settings."
   };
 
   guide.textContent = messages[error.name] ||
@@ -151,7 +45,7 @@ function showError(error) {
   console.error(error);
 }
 
-// Record a new sample.
+// Start recording.
 recordBtn.onclick = async function () {
   if (busy) return;
 
@@ -166,25 +60,25 @@ recordBtn.onclick = async function () {
 
   try {
     if (!window.isSecureContext) {
-      throw new Error("Please open the published HTTPS webpage.");
+      throw new Error("Please open your published HTTPS webpage.");
     }
 
     if (!navigator.mediaDevices?.getUserMedia ||
         !window.MediaRecorder) {
-      throw new Error("This browser cannot record microphone audio.");
+      throw new Error("Microphone recording is unavailable in this browser.");
     }
 
     const incoming = await navigator.mediaDevices.getUserMedia({
       audio: true
     });
 
-    // Ignore a request if the page was left while awaiting permission.
     if (currentRequest !== requestId) {
       incoming.getTracks().forEach(track => track.stop());
       return;
     }
 
     stream = incoming;
+
     const chunks = [];
     const session = new MediaRecorder(stream);
     let failed = false;
@@ -216,7 +110,6 @@ recordBtn.onclick = async function () {
       });
 
       if (blob.size > 0) {
-        // Replace the previous recording.
         audio.removeAttribute("src");
         audio.load();
 
@@ -240,8 +133,7 @@ recordBtn.onclick = async function () {
     guide.textContent =
       "Step 2 — Recording. Speak, then press Stop Recording.";
 
-    // Prevent accidentally leaving the microphone recording.
-    recordingTimer = setTimeout(stopRecording, 30000);
+    timer = setTimeout(stopRecording, 30000);
   } catch (error) {
     if (currentRequest !== requestId) return;
 
@@ -251,9 +143,10 @@ recordBtn.onclick = async function () {
   }
 };
 
+// Stop manually or after 30 seconds.
 function stopRecording() {
   if (recorder && recorder.state === "recording") {
-    clearTimeout(recordingTimer);
+    clearTimeout(timer);
     stopBtn.disabled = true;
     guide.textContent = "Preparing your recording...";
     recorder.stop();
@@ -262,7 +155,7 @@ function stopRecording() {
 
 stopBtn.onclick = stopRecording;
 
-// Play the sample once.
+// Play the recording once.
 playBtn.onclick = async function () {
   if (!audioURL || busy) return;
 
@@ -288,7 +181,7 @@ audio.onerror = function () {
   }
 };
 
-// Clean up when leaving the page.
+// Release resources when leaving the page.
 window.addEventListener("pagehide", function () {
   requestId++;
 

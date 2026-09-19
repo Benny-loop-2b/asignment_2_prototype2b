@@ -1,4 +1,4 @@
- {
+* {
   box-sizing: border-box;
 }
 
@@ -13,9 +13,13 @@ body {
   line-height: 1.6;
 }
 
-header {
-  padding: 35px 7%;
+header,
+footer {
+  padding: 30px 7%;
   background: #191d27;
+}
+
+header {
   border-bottom: 3px solid #c8ff61;
 }
 
@@ -25,7 +29,7 @@ h2 {
   color: #c8ff61;
 }
 
-header p {
+p {
   color: #aeb4c0;
 }
 
@@ -34,8 +38,8 @@ a {
   text-decoration: none;
 }
 
-a:hover {
-  text-decoration: underline;
+nav {
+  margin-top: 20px;
 }
 
 main {
@@ -52,16 +56,11 @@ main {
   border-radius: 12px;
 }
 
-.panel p {
-  color: #aeb4c0;
-}
-
 .guide {
   padding: 20px;
   margin: 24px 0;
   background: #222735;
   border-left: 4px solid #c8ff61;
-  border-radius: 4px;
   overflow-wrap: anywhere;
 }
 
@@ -83,17 +82,13 @@ button {
   cursor: pointer;
 }
 
-button:hover:not(:disabled) {
-  background: #dcff9a;
-}
-
 #stopRec {
   background: transparent;
   color: #c8ff61;
 }
 
-#stopRec:hover:not(:disabled) {
-  background: #293523;
+button:hover:not(:disabled) {
+  filter: brightness(1.15);
 }
 
 button:disabled {
@@ -109,13 +104,10 @@ a:focus-visible {
 
 audio {
   width: 100%;
-  margin-top: 12px;
   color-scheme: dark;
 }
 
 footer {
-  padding: 25px;
-  background: #191d27;
   color: #aeb4c0;
   text-align: center;
 }
